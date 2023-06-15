@@ -1,0 +1,170 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+//----isci----
+struct isciler {
+	char ad[20], soyad[20];
+	int yas;
+};
+//----urun----
+struct urunler {
+	int fiyat;
+	int referans_kod;
+};
+//----magaza----
+struct magazalar {
+	char ad[20], sokak[20], mahalle[20];
+	long telefon;
+	int satis;
+	struct urunler d[5];
+	struct isciler b[3];
+}magaza[2];		//2 magaza tanimladim uzun olmasin diye
+//----urun doldur----
+void urun_doldur(struct urunler *a) {
+	printf("urunun referans kodu:"); scanf("%d", &a->referans_kod);
+	printf("urunun fiyati:"); scanf("%d", &a->fiyat);
+}
+//----isci doldur----
+void isci_doldur(struct isciler* a) {
+	printf("eleman adi :"); fgets(a->ad, sizeof(a->ad), stdin);
+	if (a->ad[strlen(a->ad) - 1] == '\n') {		//null terminating
+		a->ad[strlen(a->ad) - 1] = '\0';
+	}
+	printf("eleman soyadi :"); fgets(a->soyad, sizeof(a->soyad), stdin);
+	if (a->soyad[strlen(a->soyad) - 1] == '\n') {		//null terminating
+		a->soyad[strlen(a->soyad) - 1] = '\0';
+	}
+	printf("eleman yasi :"); scanf("%d", &a->yas);
+}
+//----magaza doldur----
+void magaza_doldur(struct magazalar* a) {
+	printf("magaza adi :"); fgets(a->ad, sizeof(a->ad), stdin);
+	if (a->ad[strlen(a->ad) - 1] == '\n') {		//null terminating
+		a->ad[strlen(a->ad) - 1] = '\0';
+	}
+	printf("magaza sokak :"); fgets(a->sokak, sizeof(a->sokak), stdin);
+	if (a->sokak[strlen(a->sokak) - 1] == '\n') {		//null terminating
+		a->sokak[strlen(a->sokak) - 1] = '\0';
+	}
+	printf("magaza mahalle :"); fgets(a->mahalle, sizeof(a->mahalle), stdin);
+	if (a->mahalle[strlen(a->mahalle) - 1] == '\n') {		//null terminating
+		a->mahalle[strlen(a->mahalle) - 1] = '\0';
+	}
+	printf("magaza telefon :"); scanf("%ld", &a->telefon);
+	printf("magaza satis sayisi :"); scanf("%d", &a->satis);
+	getchar();		//burda bosluk karakterini aldi
+	printf("\n******\n");
+	//---time to fill person
+	for (int i = 0; i < 3; i++) {
+		isci_doldur(&a->b[i]);
+		getchar();
+		printf("******\n");
+	}
+	//---time to fill products
+	for (int i = 0; i < 5; i++) {
+		urun_doldur(&a->d[i]);
+		printf("******\n");
+	}
+	getchar();
+}
+//----magaza yaz----
+void magaza_yaz(struct magazalar* a) {
+	printf("magaza adi :%s\n",a->ad);
+	printf("magaza sokak :%s\n", a->sokak);
+	printf("magaza mahalle :%s\n", a->mahalle);
+	printf("magaza telefon :%ld\n", a->telefon);
+	printf("magaza satis tutari :%d\n", a->satis);
+}
+//----isci yaz----
+void isci_yaz(struct isciler* a) {
+	printf("eleman adi :%s\n", a->ad);
+	printf("eleman soyadi :%s\n", a->soyad);
+	printf("eleman yasi :%d\n", a->yas);
+}
+//----urun yaz----
+void urun_yaz(struct urunler* a) {
+	printf("urun kodu :%d\n", a->referans_kod);
+	printf("urun fiyati :%d\n", a->fiyat);
+}
+//----en yasli isci----
+
+int ey = 0, m;		//global olmak zorunda kaldi
+void en_yasli(struct magazalar* a) {
+	
+	
+	for (int k = 0; k < 3; k++) {
+		if (ey < a->b[k].yas) {
+			ey = a->b[k].yas;
+			m = k;
+		}
+	}
+	
+}
+//----her bir magazadaki ortalama urun fiyati----
+void ort_urun_fiyati(struct magazalar *a) {
+	
+	float tp = 0;
+	printf("%s magazasi ortalama urun fiyati :",a->ad);
+	for (int k = 0; k < 5; k++) {
+		tp += a->d[k].fiyat;
+	}
+	printf("%.2f\n*******\n", tp / 5);
+	
+}
+//----magaza bulundugu mahalle------
+void mahalle_yaz(struct magazalar* a) {
+	
+	printf("%s magazasi %s mahallesinde bulunuyor.\n", a->ad,a->mahalle);
+	
+}
+//----en fazla satis rakamina sahip magaza----
+int eb = -1, k = 0;
+void max_satis(struct magazalar* a) {
+	
+	
+	if (eb < a->satis) {
+		eb = a->satis;
+		k++;
+	}
+
+}
+//----finito----
+int main(){
+	for (int i = 0; i < 2; i++) {
+		magaza_doldur(&magaza[i]);
+	}
+	printf("\n\n\n\t\tYAZDIR\n\n\n");
+	for (int i = 0; i < 2; i++) {
+		magaza_yaz(&magaza[i]);
+		printf("*******\n*******\n");
+		for (int k = 0; k < 3; k++) {		//3 isci
+			isci_yaz(&magaza[i].b[k]);
+			printf("--------\n");
+		}
+		printf("*******\n*******\n");
+		for (int l = 0; l < 5; l++) {		//5 urun
+			urun_yaz(&magaza[i].d[l]);
+			printf("--------\n");
+		}
+		printf("*******\n*******\n");
+	}
+	for (int i = 0; i < 2; i++) {
+		en_yasli(&magaza[i]);
+	}
+	printf("magaza zinciri en yaslisi %d yasinda\n", ey);
+
+	for (int i = 0; i < 2; i++) {
+		ort_urun_fiyati(&magaza[i]);
+	}
+	for (int i = 0; i < 2; i++) {
+		mahalle_yaz(&magaza[i]);
+	}
+	printf("\n=======\n");
+	for (int i = 0; i < 2; i++) {
+		max_satis(&magaza[i]);
+		printf("%d ile en fazla satisa sahip magaza :%s", magaza[k].satis,magaza[k].ad);
+	}
+}
+
+
